@@ -1,66 +1,126 @@
-## Foundry
+Foundry Smart Contract Lottery
+This is a section of the Cyfrin Foundry Solidity Course.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+⭐️ (3:04:09) | Lesson 9: Foundry Smart Contract Lottery
 
-Foundry consists of:
+Foundry Smart Contract Lottery
+Getting Started
+Requirements
+Quickstart
+Optional Gitpod
+Usage
+Start a local node
+Library
+Deploy
+Deploy - Other Network
+Testing
+Test Coverage
+Deployment to a testnet or mainnet
+Scripts
+Estimate gas
+Formatting
+Additional Info:
+Let's talk about what "Official" means
+Summary
+Thank you!
+Getting Started
+Requirements
+git
+You'll know you did it right if you can run git --version and you see a response like git version x.x.x
+foundry
+You'll know you did it right if you can run forge --version and you see a response like forge 0.2.0 (816e00b 2023-03-16T00:05:26.396218Z)
+Quickstart
+git clone https://github.com/Cyfrin/foundry-smart-contract-lottery-cu
+cd foundry-smart-contract-lottery-cu
+forge build
+Optional Gitpod
+If you can't or don't want to run and install locally, you can work with this repo in Gitpod. If you do this, you can skip the clone this repo part.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Open in Gitpod
 
-## Documentation
+Usage
+Start a local node
+make anvil
+Library
+If you're having a hard time installing the chainlink library, you can optionally run this command.
 
-https://book.getfoundry.sh/
+forge install smartcontractkit/chainlink-brownie-contracts@0.6.1 --no-commit
+Deploy
+This will default to your local node. You need to have it running in another terminal in order for it to deploy.
 
-## Usage
+make deploy
+Deploy - Other Network
+See below
 
-### Build
+Testing
+We talk about 4 test tiers in the video.
 
-```shell
-$ forge build
-```
+Unit
+Integration
+Forked
+Staging
+This repo we cover #1 and #3.
 
-### Test
+forge test
+or
 
-```shell
-$ forge test
-```
+forge test --fork-url $SEPOLIA_RPC_URL
+Test Coverage
+forge coverage
+Deployment to a testnet or mainnet
+Setup environment variables
+You'll want to set your SEPOLIA_RPC_URL and PRIVATE_KEY as environment variables. You can add them to a .env file, similar to what you see in .env.example.
 
-### Format
+PRIVATE_KEY: The private key of your account (like from metamask). NOTE: FOR DEVELOPMENT, PLEASE USE A KEY THAT DOESN'T HAVE ANY REAL FUNDS ASSOCIATED WITH IT.
+You can learn how to export it here.
+SEPOLIA_RPC_URL: This is url of the sepolia testnet node you're working with. You can get setup with one for free from Alchemy
+Optionally, add your ETHERSCAN_API_KEY if you want to verify your contract on Etherscan.
 
-```shell
-$ forge fmt
-```
+Get testnet ETH
+Head over to faucets.chain.link and get some testnet ETH. You should see the ETH show up in your metamask.
 
-### Gas Snapshots
+Deploy
+make deploy ARGS="--network sepolia"
+This will setup a ChainlinkVRF Subscription for you. If you already have one, update it in the scripts/HelperConfig.s.sol file. It will also automatically add your contract as a consumer.
 
-```shell
-$ forge snapshot
-```
+Register a Chainlink Automation Upkeep
+You can follow the documentation if you get lost.
 
-### Anvil
+Go to automation.chain.link and register a new upkeep. Choose Custom logic as your trigger mechanism for automation. Your UI will look something like this once completed:
 
-```shell
-$ anvil
-```
+Automation
 
-### Deploy
+Scripts
+After deploying to a testnet or local net, you can run the scripts.
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+Using cast deployed locally example:
 
-### Cast
+cast send <RAFFLE_CONTRACT_ADDRESS> "enterRaffle()" --value 0.1ether --private-key <PRIVATE_KEY> --rpc-url $SEPOLIA_RPC_URL
+or, to create a ChainlinkVRF Subscription:
 
-```shell
-$ cast <subcommand>
-```
+make createSubscription ARGS="--network sepolia"
+Estimate gas
+You can estimate how much gas things cost by running:
 
-### Help
+forge snapshot
+And you'll see an output file called .gas-snapshot
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Formatting
+To run code formatting:
+
+forge fmt
+Additional Info:
+Some users were having a confusion that whether Chainlink-brownie-contracts is an official Chainlink repository or not. Here is the info. Chainlink-brownie-contracts is an official repo. The repository is owned and maintained by the chainlink team for this very purpose, and gets releases from the proper chainlink release process. You can see it's still the smartcontractkit org as well.
+
+https://github.com/smartcontractkit/chainlink-brownie-contracts
+
+Let's talk about what "Official" means
+The "official" release process is that chainlink deploys it's packages to npm. So technically, even downloading directly from smartcontractkit/chainlink is wrong, because it could be using unreleased code.
+
+So, then you have two options:
+
+Download from NPM and have your codebase have dependencies foreign to foundry
+Download from the chainlink-brownie-contracts repo which already downloads from npm and then packages it nicely for you to use in foundry.
+Summary
+That is an official repo maintained by the same org
+It downloads from the official release cycle chainlink/contracts use (npm) and packages it nicely for digestion from foundry.
